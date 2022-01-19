@@ -46,5 +46,5 @@ def set_values(keg, kol, cool):
 
 
 def clean():
-    display.fill_rect(_VALUE_X, _KEG_Y, 40, _COOL_Y - _KEG_Y + 10, 0)
+    display.fill_rect(_VALUE_X, _KEG_Y, _FRAME_X - _VALUE_X, _COOL_Y - _KEG_Y + 10, 0)
     display.show()
