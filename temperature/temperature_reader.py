@@ -3,6 +3,10 @@ import onewire
 import ds18x20
 
 
+def convert_to_string(temp_decimal):
+    return "{:.2f}".format(temp_decimal)
+
+
 class TempReader:
     temperature = None
 

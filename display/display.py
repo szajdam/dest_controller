@@ -38,13 +38,14 @@ def build_screen():
 
 
 def set_values(keg, kol, cool):
-    clean()
+    clean(True)
     display.text(keg, _VALUE_X, _KEG_Y, 1)
     display.text(kol, _VALUE_X, _KOL_Y, 1)
     display.text(cool, _VALUE_X, _COOL_Y, 1)
     display.show()
 
 
-def clean():
+def clean(should_show):
     display.fill_rect(_VALUE_X, _KEG_Y, _FRAME_X - _VALUE_X, _COOL_Y - _KEG_Y + 10, 0)
-    display.show()
+    if should_show:
+        display.show()
