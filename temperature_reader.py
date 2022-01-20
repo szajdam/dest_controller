@@ -11,8 +11,11 @@ class TempReader:
         print('found devices:', self.roms)
 
     def read_temperature(self):
-        self.ds.convert_temp()
-        temperature = None
-        for rom in self.roms:
-            temperature = self.ds.read_temp(rom);
-        return temperature
+        if self.roms.count() > 0:
+            self.ds.convert_temp()
+            temperature = None
+            for rom in self.roms:
+                temperature = self.ds.read_temp(rom);
+            return temperature
+        else:
+            return 0
