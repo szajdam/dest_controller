@@ -9,46 +9,17 @@ _PORT_COL = 26
 
 _PORT_COOL = 25
 
-_REFRESH_DELAY = 1000
+_REFRESH_DELAY = 10
 
 
-def convert_to_string(temp_decimal)
-    return "{:.2f}".format(temp_decimal)
+def convert_to_string(temp_decimal):
+    return format(str(temp_decimal))
 
 
 class MeasureResult:
-    def __init__(self):
-        self.temperature_keg = None
-        self.temperature_column = None
-        self.temperature_cooler = None
-
     def __init__(self, temperature_keg, temperature_column, temperature_cooler):
         self.temperature_keg = temperature_keg
         self.temperature_column = temperature_column
-        self.temperature_cooler = temperature_cooler
-
-    @property
-    def temperature_keg(self):
-        return self.temperature_keg
-
-    @temperature_keg.setter
-    def temperature_keg(self, temperature_keg):
-        self.temperature_keg = temperature_keg
-
-    @property
-    def temperature_column(self):
-        return self.temperature_column
-
-    @temperature_column.setter
-    def temperature_column(self, temperature_column):
-        self.temperature_column = temperature_column
-
-    @property
-    def temperature_cooler(self):
-        return self.temperature_cooler
-
-    @temperature_cooler.setter
-    def temperature_cooler(self, temperature_cooler):
         self.temperature_cooler = temperature_cooler
 
 
@@ -76,17 +47,16 @@ class TempSensor:
 
 
 class TempReader:
-    last_time = None
 
     def __init__(self):
         self.sensor_keg = TempSensor(_PORT_KEG)
         self.sensor_column = TempSensor(_PORT_COL)
         self.sensor_cooler = TempSensor(_PORT_COOL)
-
-        self.measure_result = MeasureResult()
+        self.last_time = time.time()
+        self.measure_result = MeasureResult(0.00, 0.00, 0.00)
 
     def get_keg_temperature_for_string(self):
-        return "{:.2f}".format(self.get_keg_temperature())
+        return convert_to_string(self.get_keg_temperature())
 
     def get_keg_temperature(self):
         self.read_temperatures()
@@ -94,8 +64,8 @@ class TempReader:
 
     def read_temperatures(self):
         current_time = time.time()
-        if self.last_time is not None \
-                or current_time - self.last_time > _REFRESH_DELAY:
+        print(current_time - self.last_time)
+        if current_time - self.last_time > _REFRESH_DELAY:
             temperature_keg = self.sensor_keg.read_temperature()
             temperature_column = self.sensor_column.read_temperature()
             temperature_cooler = self.sensor_cooler.read_temperature()
