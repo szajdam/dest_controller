@@ -1,7 +1,7 @@
-from cooling_pump_controller import pump_control
+from cooling_pump_controller import PumpControl
 import time
 
-pump = pump_control()
+pump = PumpControl()
 pump.start()
 time.sleep_ms(10000)
 pump.stop()

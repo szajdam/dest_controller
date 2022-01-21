@@ -11,7 +11,7 @@ def get_duty(percentage):
     return percentage / 100 * 65535
 
 
-class pump_control:
+class PumpControl:
     def __init__(self):
         pin_pwm = Pin(_PWM_PIN_NUMBER)  # IO25/D2
         self.pin_in1 = Pin(_IN1_PIN_NUMBER, Pin.OUT)  # IO26/D3
