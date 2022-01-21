@@ -3,45 +3,98 @@ import onewire
 import ds18x20
 import time
 
+_PORT_KEG = 27
 
-def convert_to_string(temp_decimal):
-    return "{:.2f}".format(temp_decimal)
+_PORT_COL = 26
 
+_PORT_COOL = 25
 
 _REFRESH_DELAY = 1000
 
 
-class TempReader:
-    temperature = None
-    last_time = time.time()
+def convert_to_string(temp_decimal: object) -> str:
+    return "{:.2f}".format(temp_decimal)
 
-    def __init__(self, pin_number):
-        self.temperature = 0.00
-        pin = machine.Pin(pin_number)
+
+class MeasureResult:
+    def __init__(self):
+        self.temperature_keg = None
+        self.temperature_column = None
+        self.temperature_cooler = None
+
+    def __init__(self, temperature_keg, temperature_column, temperature_cooler):
+        self.temperature_keg = temperature_keg
+        self.temperature_column = temperature_column
+        self.temperature_cooler = temperature_cooler
+
+    @property
+    def temperature_keg(self):
+        return self.temperature_keg
+
+    @temperature_keg.setter
+    def temperature_keg(self, temperature_keg):
+        self.temperature_keg = temperature_keg
+
+    @property
+    def temperature_column(self):
+        return self.temperature_column
+
+    @temperature_column.setter
+    def temperature_column(self, temperature_column):
+        self.temperature_column = temperature_column
+
+    @property
+    def temperature_cooler(self):
+        return self.temperature_cooler
+
+    @temperature_cooler.setter
+    def temperature_cooler(self, temperature_cooler):
+        self.temperature_cooler = temperature_cooler
+
+
+class TempSensor:
+    is_initialised = False
+
+    def __init__(self, port_number):
+        self.last_time = None
+        pin = machine.Pin(port_number)
         self.ds = ds18x20.DS18X20(onewire.OneWire(pin))
-        self.roms = self.ds.scan()
-        print('found devices:', self.roms)
-
-    def get_temperature_for_string(self):
-        if self.temperature is not None:
-            return "{:.2f}".format(self.temperature)
-        else:
-            return "00.00"
-
-    def get_temperature_for_string(self):
-        self.read_temperature()
-        if self.temperature is not None:
-            return self.temperature
-        else:
-            return 0.00
+        sensors = self.ds.scan()
+        print('found devices:', sensors)
+        if len(sensors) > 0:
+            self.is_initialised = True
+            self.sensor = sensors[0]
 
     def read_temperature(self):
-        current_time = time.time()
-        if len(self.roms) > 0 and current_time - self.last_time >= _REFRESH_DELAY:
+        if self.is_initialised:
             self.ds.convert_temp()
-            for rom in self.roms:
-                self.temperature = self.ds.read_temp(rom)
-                self.last_time = time.time()
-                print("Measured : " + self.temperature)
-        else:
-            self.temperature = None
+            temperature = self.ds.read_temp(self.sensor)
+            print("Measured : " + temperature)
+            return temperature
+
+
+class TempReader:
+    last_time = None
+
+    def __init__(self):
+        self.sensor_keg = TempSensor(_PORT_KEG)
+        self.sensor_column = TempSensor(_PORT_COL)
+        self.sensor_cooler = TempSensor(_PORT_COOL)
+
+        self.measure_result = MeasureResult()
+
+    def get_keg_temperature_for_string(self) -> str:
+        return "{:.2f}".format(self.get_keg_temperature())
+
+    def get_keg_temperature(self):
+        self.read_temperatures()
+        return self.measure_result.temperature_keg
+
+    def read_temperatures(self):
+        current_time = time.time()
+        if self.last_time is not None \
+                or current_time - self.last_time > _REFRESH_DELAY:
+            temperature_keg = self.sensor_keg.read_temperature()
+            temperature_column = self.sensor_column.read_temperature()
+            temperature_cooler = self.sensor_cooler.read_temperature()
+            self.measure_result = MeasureResult(temperature_keg, temperature_column, temperature_cooler)
