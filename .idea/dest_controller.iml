@@ -12,6 +12,7 @@
       <sourceFolder url="file://$MODULE_DIR$/display" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/lib" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/temperature" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/pump" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
     <orderEntry type="inheritedJdk" />
