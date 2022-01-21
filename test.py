@@ -1,7 +1,7 @@
 import time
 
 import temperature_reader
-from display import display
+import display
 
 _REFRESH_DELAY = 1000
 
@@ -15,9 +15,9 @@ temp_reader_col = temperature_reader.TempReader
 temp_reader_cool = temperature_reader.TempReader
 
 while True:
-    temperature_keg: str = temp_reader_keg.get_keg_temperature_for_string()
-    temperature_col: str = temp_reader_col.get_keg_temperature_for_string()
-    temperature_cool: str = temp_reader_cool.get_keg_temperature_for_string()
+    temperature_keg = temp_reader_keg.get_keg_temperature_for_string()
+    temperature_col = temp_reader_col.get_keg_temperature_for_string()
+    temperature_cool = temp_reader_cool.get_keg_temperature_for_string()
     if temperature_keg != prev_temperature_keg \
             or temperature_col != prev_temperature_col \
             or temperature_cool != prev_temperature_cool:

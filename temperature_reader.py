@@ -12,7 +12,7 @@ _PORT_COOL = 25
 _REFRESH_DELAY = 1000
 
 
-def convert_to_string(temp_decimal: object) -> str:
+def convert_to_string(temp_decimal)
     return "{:.2f}".format(temp_decimal)
 
 
@@ -85,7 +85,7 @@ class TempReader:
 
         self.measure_result = MeasureResult()
 
-    def get_keg_temperature_for_string(self) -> str:
+    def get_keg_temperature_for_string(self):
         return "{:.2f}".format(self.get_keg_temperature())
 
     def get_keg_temperature(self):
