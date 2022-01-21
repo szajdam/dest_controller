@@ -19,7 +19,6 @@ class pump_control:
 
         self.pwm = PWM(pin_pwm, freq=1000)
         self.pwm.duty_u16(get_duty(0))  # current duty cycle, range 0-65535
-        self.pwm.deinit()
 
         self.pin_in1.off()
         self.pin_in2.on()

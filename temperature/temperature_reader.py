@@ -71,6 +71,8 @@ class TempSensor:
             temperature = self.ds.read_temp(self.sensor)
             print("Measured : " + temperature)
             return temperature
+        else:
+            return 0.00
 
 
 class TempReader:
