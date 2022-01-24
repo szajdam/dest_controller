@@ -1,8 +1,8 @@
+import time
+
+import ds18x20
 import machine
 import onewire
-import ds18x20
-import time
-import _thread
 
 _PORT_KEG = 27
 
@@ -67,49 +67,53 @@ class Singleton(object):
 
     def __new__(cls, *args, **kwargs):
         if not isinstance(cls._instance, cls):
-            cls._instance = object.__new__(cls, *args, **kwargs)
+            print('New instance', cls, ' - ', cls._instance)
+            cls._instance = object.__new__(cls)
+            print(cls._instance)
         return cls._instance
 
 
 class TempReader(Singleton):
-
+    
+    _last_time = time.time()
+    _sensor_keg = TempSensor(_PORT_KEG)
+    _sensor_column = TempSensor(_PORT_COL)
+    _sensor_cooler = TempSensor(_PORT_COOL)
+    _measured_result = MeasureResult(0.00, 0.00, 0.00)
+    
     def __init__(self):
-        self.sensor_keg = TempSensor(_PORT_KEG)
-        self.sensor_column = TempSensor(_PORT_COL)
-        self.sensor_cooler = TempSensor(_PORT_COOL)
-        self.last_time = time.time()
-        self.measured_result = MeasureResult(0.00, 0.00, 0.00)
+        print(self._last_time)
 
     def get_keg_temperature_for_string(self):
         return _convert_to_string(self.get_keg_temperature())
 
     def get_keg_temperature(self):
         self.read_temperatures()
-        return self.measured_result.temperature_keg
+        return self._measured_result.temperature_keg
 
     def get_col_temperature_for_string(self):
         return _convert_to_string(self.get_col_temperature())
 
     def get_col_temperature(self):
         self.read_temperatures()
-        return self.measured_result.temperature_column
+        return self._measured_result.temperature_column
 
     def get_cool_temperature_for_string(self):
         return _convert_to_string(self.get_cool_temperature())
 
     def get_cool_temperature(self):
         self.read_temperatures()
-        return self.measured_result.temperature_cooler
+        return self._measured_result.temperature_cooler
 
     def read_temperatures(self):
         current_time = time.time()
-        print('TimeDiff', current_time - self.last_time)
-        if current_time - self.last_time > _REFRESH_DELAY:
-            temperature_keg = self.sensor_keg.read_temperature()
-            temperature_column = self.sensor_column.read_temperature()
-            temperature_cooler = self.sensor_cooler.read_temperature()
+        print('TimeDiff', current_time - self._last_time)
+        if current_time - self._last_time > _REFRESH_DELAY:
+            temperature_keg = self._sensor_keg.read_temperature()
+            temperature_column = self._sensor_column.read_temperature()
+            temperature_cooler = self._sensor_cooler.read_temperature()
             print('Keg reading', _convert_to_string(temperature_keg))
             print('Col reading', _convert_to_string(temperature_column))
             print('Cool reading', _convert_to_string(temperature_cooler))
-            self.measured_result = MeasureResult(temperature_keg, temperature_column, temperature_cooler)
-            self.last_time = current_time
+            self._measured_result = MeasureResult(temperature_keg, temperature_column, temperature_cooler)
+            self._last_time = current_time
