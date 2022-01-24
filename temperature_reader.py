@@ -67,20 +67,18 @@ class Singleton(object):
 
     def __new__(cls, *args, **kwargs):
         if not isinstance(cls._instance, cls):
-            print('New instance', cls, ' - ', cls._instance)
             cls._instance = object.__new__(cls)
-            print(cls._instance)
         return cls._instance
 
 
 class TempReader(Singleton):
-    
+
     _last_time = time.time()
     _sensor_keg = TempSensor(_PORT_KEG)
     _sensor_column = TempSensor(_PORT_COL)
     _sensor_cooler = TempSensor(_PORT_COOL)
     _measured_result = MeasureResult(0.00, 0.00, 0.00)
-    
+
     def __init__(self):
         print(self._last_time)
 
