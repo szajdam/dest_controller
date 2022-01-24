@@ -2,7 +2,7 @@ import machine
 import onewire
 import ds18x20
 import time
-from threading import Lock, Thread
+import _thread
 
 _PORT_KEG = 27
 
@@ -62,20 +62,19 @@ class TempSensor:
             self.check_sensor_availability()
 
 
-class TempReaderSingletonMeta(type):
+class Singleton(type):
     _instances = {}
 
-    _lock: Lock = Lock()
-
     def __call__(cls, *args, **kwargs):
-        with cls._lock:
-            if cls not in cls._instances:
-                instance = super().__call__(*args, **kwargs)
-                cls._instances[cls] = instance
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
 
 
-class TempReader(metaclass=TempReaderSingletonMeta):
+MC = Singleton('MC', object, {})
+
+
+class TempReader(MC):
 
     def __init__(self):
         self.sensor_keg = TempSensor(_PORT_KEG)
