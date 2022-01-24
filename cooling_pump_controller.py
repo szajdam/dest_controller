@@ -67,4 +67,4 @@ class PumpControl:
         self.pin_in2.on()
 
     def is_running(self):
-        self.current_speed > 0
+        return self.current_speed > 0
