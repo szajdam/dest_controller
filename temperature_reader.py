@@ -62,19 +62,16 @@ class TempSensor:
             self.check_sensor_availability()
 
 
-class Singleton(type):
-    _instances = {}
+class Singleton(object):
+    _instance = None
 
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
-
-
-MC = Singleton('MC', object, {})
+    def __new__(cls, *args, **kwargs):
+        if not isinstance(cls._instance, cls):
+            cls._instance = object.__new__(cls, *args, **kwargs)
+        return cls._instance
 
 
-class TempReader(MC):
+class TempReader(Singleton):
 
     def __init__(self):
         self.sensor_keg = TempSensor(_PORT_KEG)
