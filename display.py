@@ -1,6 +1,7 @@
 from machine import Pin, I2C
 import sh1106
 import temperature_reader
+import time
 
 _KEG_TEXT = 'Keg'
 _KOL_TEXT = 'Kolumna'
@@ -48,7 +49,6 @@ class Display:
         self.display.text(_COOL_TEXT, _TEXT_X, _COOL_Y, 1)
         self.display.rect(1, 1, _FRAME_X, _FRAME_Y, 1)
         self.display.show()
-        self.animate_pump()
 
     def update_values(self):
         temp_reader = temperature_reader.TempReader()
@@ -59,19 +59,42 @@ class Display:
             self._set_values(keg, kol, cool)
 
     def animate_pump(self):
-        x1 = 10
-        y1 = 34
-        x2 = 20
-        y2 = 34
-        # vertical
-        self.display.line(x1, y1, x2, y2, 1)
+        while True:
+            self.print_plus(1)
+            time.sleep(1)
+            self.print_plus(0)
+            self.print_X(1)
+            time.sleep(1)
+            self.print_X(0)
 
+    def print_plus(self, colour):
+        x1 = 10
+        y1 = 44
+        x2 = 10
+        y2 = 54
+        # vertical
+        self.display.line(x1, y1, x2, y2, colour)
         x1 = 5
-        y1 = 39
+        y1 = 49
         x2 = 15
-        y2 = 39
-        #horizontal
-        self.display.line(x1, y1, x2, y2, 1)
+        y2 = 49
+        # horizontal
+        self.display.line(x1, y1, x2, y2, colour)
+        self.display.show()
+
+    def print_X(self, colour):
+        x1 = 14
+        y1 = 45
+        x2 = 6
+        y2 = 53
+        # vertical
+        self.display.line(x1, y1, x2, y2, colour)
+        x1 = 6
+        y1 = 45
+        x2 = 14
+        y2 = 53
+        # horizontal
+        self.display.line(x1, y1, x2, y2, colour)
         self.display.show()
 
     def _set_values(self, keg, kol, cool):

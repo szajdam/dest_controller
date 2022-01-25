@@ -14,8 +14,8 @@ _COOL_TEMP_LOW = 25.0
 _SPEED_ADJUST_VALUE = 5
 
 
-def get_duty(percentage):
-    return percentage / 100 * 65535
+def get_duty(percentage) -> int:
+    return round(percentage / 100 * 1023)
 
 
 def is_higher(temperature):
@@ -44,12 +44,12 @@ class PumpControl(PumpControlSingleton):
         self.pin_in2 = Pin(_IN2_PIN_NUMBER, Pin.OUT)  # IO27/D4
 
         self.pwm = PWM(pin_pwm, freq=1000)
-        self.pwm.duty_u16(get_duty(0))  # current duty cycle, range 0-65535
+        self.pwm.duty(get_duty(0))  # current duty cycle, range 0-65535
 
         self.pin_in1.off()
         self.pin_in2.on()
 
-    def adjust_speed(self, ):
+    def adjust_speed(self):
         temp_reader = temperature_reader.TempReader()
         cool_temp = temp_reader.get_cool_temperature_for_string()
         if is_higher(cool_temp):
@@ -60,17 +60,17 @@ class PumpControl(PumpControlSingleton):
             self.change_speed(new_speed)
 
     def change_speed(self, percentage):
-        self.pwm.duty_u16(get_duty(percentage))
+        self.pwm.duty(get_duty(percentage))
         self._current_speed = percentage
         print('Pump speed adjusted to', percentage)
 
     def start(self):
-        self.pwm.duty_u16(get_duty(100))
+        self.pwm.duty(get_duty(100))
         self.pin_in1.off()
         self.pin_in2.on()
 
     def stop(self):
-        self.pwm.duty_u16(get_duty(0))
+        self.pwm.duty(get_duty(0))
 
     def fast_stop(self):
         self.pin_in1.on()
