@@ -48,6 +48,7 @@ class Display:
         self.display.text(_COOL_TEXT, _TEXT_X, _COOL_Y, 1)
         self.display.rect(1, 1, _FRAME_X, _FRAME_Y, 1)
         self.display.show()
+        self.animate_pump()
 
     def update_values(self):
         temp_reader = temperature_reader.TempReader()
@@ -57,8 +58,24 @@ class Display:
         if self._should_update_temps(keg, kol, cool):
             self._set_values(keg, kol, cool)
 
+    def animate_pump(self):
+        x1 = 10
+        y1 = 34
+        x2 = 20
+        y2 = 34
+        # vertical
+        self.display.line(x1, y1, x2, y2, 1)
+
+        x1 = 5
+        y1 = 39
+        x2 = 15
+        y2 = 39
+        #horizontal
+        self.display.line(x1, y1, x2, y2, 1)
+        self.display.show()
+
     def _set_values(self, keg, kol, cool):
-        self.clean(True)
+        self.clean_temp(True)
         self.display.text(keg, _VALUE_X, _KEG_Y, 1)
         self.display.text(kol, _VALUE_X, _KOL_Y, 1)
         self.display.text(cool, _VALUE_X, _COOL_Y, 1)
@@ -75,7 +92,7 @@ class Display:
         else:
             return False
 
-    def clean(self, should_show):
+    def clean_temp(self, should_show):
         self.display.fill_rect(_VALUE_X, _KEG_Y, _FRAME_X - _VALUE_X, _COOL_Y - _KEG_Y + 10, 0)
         if should_show:
             self.display.show()

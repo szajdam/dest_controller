@@ -62,7 +62,7 @@ class TempSensor:
             self.check_sensor_availability()
 
 
-class Singleton(object):
+class TempReaderSingleton(object):
     _instance = None
 
     def __new__(cls, *args, **kwargs):
@@ -71,7 +71,7 @@ class Singleton(object):
         return cls._instance
 
 
-class TempReader(Singleton):
+class TempReader(TempReaderSingleton):
 
     _last_time = time.time()
     _sensor_keg = TempSensor(_PORT_KEG)
