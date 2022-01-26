@@ -61,11 +61,11 @@ class Display:
     def animate_pump(self):
         while True:
             self.print_plus(1)
-            time.sleep(1)
+            time.sleep_ms(500)
             self.print_plus(0)
-            self.print_X(1)
-            time.sleep(1)
-            self.print_X(0)
+            self.print_x(1)
+            time.sleep_ms(500)
+            self.print_x(0)
 
     def print_plus(self, colour):
         x1 = 10
@@ -82,7 +82,7 @@ class Display:
         self.display.line(x1, y1, x2, y2, colour)
         self.display.show()
 
-    def print_X(self, colour):
+    def print_x(self, colour):
         x1 = 14
         y1 = 45
         x2 = 6

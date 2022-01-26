@@ -21,7 +21,7 @@ def _convert_to_string(temp_decimal):
 
 
 class MeasureResult:
-    def __init__(self, temperature_keg, temperature_column, temperature_cooler):
+    def __init__(self, temperature_keg: float, temperature_column: float, temperature_cooler: float):
         self.temperature_keg = temperature_keg
         self.temperature_column = temperature_column
         self.temperature_cooler = temperature_cooler
