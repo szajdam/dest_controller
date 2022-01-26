@@ -81,7 +81,7 @@ class TempReader(TempReaderSingleton):
         self._sensor_keg = TempSensor(_PORT_KEG)
         self._sensor_column = TempSensor(_PORT_COL)
         self._sensor_cooler = TempSensor(_PORT_COOL)
-        self._measured_result = MeasureResult(0.00, 0.00, 0.00)
+        self._measured_result = MeasureResult(None, None, None)
         self.__initialised = True
 
     def get_keg_temperature_for_string(self):
