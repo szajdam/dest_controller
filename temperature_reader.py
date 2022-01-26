@@ -68,19 +68,21 @@ class TempReaderSingleton(object):
     def __new__(cls, *args, **kwargs):
         if not isinstance(cls._instance, cls):
             cls._instance = object.__new__(cls)
+            cls._instance.__initialised = False
         return cls._instance
 
 
 class TempReader(TempReaderSingleton):
 
-    _last_time = time.time()
-    _sensor_keg = TempSensor(_PORT_KEG)
-    _sensor_column = TempSensor(_PORT_COL)
-    _sensor_cooler = TempSensor(_PORT_COOL)
-    _measured_result = MeasureResult(0.00, 0.00, 0.00)
-
     def __init__(self):
-        print(self._last_time)
+        if self.__initialised:
+            return
+        self._last_time = time.time()
+        self._sensor_keg = TempSensor(_PORT_KEG)
+        self._sensor_column = TempSensor(_PORT_COL)
+        self._sensor_cooler = TempSensor(_PORT_COOL)
+        self._measured_result = MeasureResult(0.00, 0.00, 0.00)
+        self.__initialised = True
 
     def get_keg_temperature_for_string(self):
         return _convert_to_string(self.get_keg_temperature())

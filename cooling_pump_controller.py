@@ -32,13 +32,15 @@ class PumpControlSingleton(object):
     def __new__(cls, *args, **kwargs):
         if not isinstance(cls._instance, cls):
             cls._instance = object.__new__(cls)
+            cls._instance.__initialised = False
         return cls._instance
 
 
 class PumpControl(PumpControlSingleton):
-    _current_speed = get_duty(0)
 
     def __init__(self):
+        if self.__initialised:
+            return
         pin_pwm = Pin(_PWM_PIN_NUMBER)  # IO25/D2
         self.pin_in1 = Pin(_IN1_PIN_NUMBER, Pin.OUT)  # IO26/D3
         self.pin_in2 = Pin(_IN2_PIN_NUMBER, Pin.OUT)  # IO27/D4
@@ -48,6 +50,8 @@ class PumpControl(PumpControlSingleton):
 
         self.pin_in1.off()
         self.pin_in2.on()
+        self._current_speed: int = get_duty(0)
+        self.__initialised = True
 
     def adjust_speed(self):
         temp_reader = temperature_reader.TempReader()
