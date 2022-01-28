@@ -1,5 +1,7 @@
 from machine import Pin, I2C
 import sh1106
+
+import cooling_pump_controller
 import temperature_reader
 import time
 
@@ -20,6 +22,8 @@ _SCREEN_X_SIZE = 128
 _FRAME_X = _SCREEN_X_SIZE - 2
 _FRAME_Y = _SCREEN_Y_SIZE - 2
 
+_MIN_PAUSE_MS = 100
+
 
 def _none_or_differs(prev_temp, current_temp):
     if prev_temp is None or prev_temp != current_temp:
@@ -28,14 +32,28 @@ def _none_or_differs(prev_temp, current_temp):
         return False
 
 
-class Display:
-    def __init__(self):
-        self.prev_keg = None
-        self.prev_kol = None
-        self.prev_cool = None
+def _calculate_animation_pause(pump_speed):
+    if pump_speed == 0:
+        return 100000
+    else:
+        return round(_MIN_PAUSE_MS / pump_speed / 1000)
 
-        i2c = I2C(scl=Pin(22), sda=Pin(21), freq=400000)
-        self.display = sh1106.SH1106_I2C(_SCREEN_X_SIZE, _SCREEN_Y_SIZE, i2c)
+
+class Display:
+    __monostate = None
+
+    def __init__(self):
+        if not Display.__monostate:
+            Display.__monostate = self.__dict__
+            self.prev_keg = None
+            self.prev_kol = None
+            self.prev_cool = None
+
+            i2c = I2C(scl=Pin(22), sda=Pin(21), freq=400000)
+            self.display = sh1106.SH1106_I2C(_SCREEN_X_SIZE, _SCREEN_Y_SIZE, i2c)
+            self.start()
+        else:
+            self.__dict__ = Display.__monostate
 
     def start(self):
         self._build_screen()
@@ -59,12 +77,19 @@ class Display:
             self._set_values(keg, kol, cool)
 
     def animate_pump(self):
+        pump = cooling_pump_controller.PumpControl
+        cycles = 0
         while True:
+            pause_ms = _MIN_PAUSE_MS
+            cycles = cycles + 1
+            if cycles > 10:
+                pause_ms = _calculate_animation_pause(pump.get_current_speed())
+                cycles = 0
             self.print_plus(1)
-            time.sleep_ms(500)
+            time.sleep_ms(pause_ms)
             self.print_plus(0)
             self.print_x(1)
-            time.sleep_ms(500)
+            time.sleep_ms(pause_ms)
             self.print_x(0)
 
     def print_plus(self, colour):

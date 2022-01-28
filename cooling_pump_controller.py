@@ -19,11 +19,17 @@ def get_duty(percentage) -> int:
 
 
 def is_higher(temperature):
-    return temperature >= _COOL_TEMP_HIGH
+    if temperature is None:
+        return False
+    else:
+        return temperature >= _COOL_TEMP_HIGH
 
 
 def is_lower(temperature):
-    return temperature < _COOL_TEMP_LOW
+    if temperature is None:
+        return False
+    else:
+        return temperature < _COOL_TEMP_LOW
 
 
 class PumpControlSingleton(object):
@@ -55,18 +61,20 @@ class PumpControl(PumpControlSingleton):
 
     def adjust_speed(self):
         temp_reader = temperature_reader.TempReader()
-        cool_temp = temp_reader.get_cool_temperature_for_string()
+        cool_temp = temp_reader.get_cool_temperature()
         if is_higher(cool_temp):
             new_speed = self._current_speed + _SPEED_ADJUST_VALUE
             self.change_speed(new_speed)
         if is_lower(cool_temp):
             new_speed = self._current_speed - _SPEED_ADJUST_VALUE
+
             self.change_speed(new_speed)
 
     def change_speed(self, percentage):
-        self.pwm.duty(get_duty(percentage))
-        self._current_speed = percentage
-        print('Pump speed adjusted to', percentage)
+        if percentage > 0:
+            self.pwm.duty(get_duty(percentage))
+            self._current_speed = percentage
+            print('Pump speed adjusted to', percentage)
 
     def start(self):
         self.pwm.duty(get_duty(100))
@@ -82,3 +90,6 @@ class PumpControl(PumpControlSingleton):
 
     def is_running(self):
         return self._current_speed > 0
+
+    def get_current_speed(self):
+        return self._current_speed

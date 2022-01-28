@@ -21,7 +21,7 @@ def _convert_to_string(temp_decimal):
 
 
 class MeasureResult:
-    def __init__(self, temperature_keg: float, temperature_column: float, temperature_cooler: float):
+    def __init__(self, temperature_keg, temperature_column, temperature_cooler):
         self.temperature_keg = temperature_keg
         self.temperature_column = temperature_column
         self.temperature_cooler = temperature_cooler
@@ -57,7 +57,6 @@ class TempSensor:
                 return temperature
             else:
                 self.check_sensor_availability()
-                return 0.00
         except onewire.OneWireError:
             self.check_sensor_availability()
 
@@ -70,6 +69,18 @@ class TempReaderSingleton(object):
             cls._instance = object.__new__(cls)
             cls._instance.__initialised = False
         return cls._instance
+
+
+# class Borg:
+#     __monostate = None
+#
+#     def __init__(self):
+#         if not Borg.__monostate:
+#             Borg.__monostate = self.__dict__
+#             self.x = 1
+#
+#         else:
+#             self.__dict__ = Borg.__monostate
 
 
 class TempReader(TempReaderSingleton):
@@ -107,7 +118,6 @@ class TempReader(TempReaderSingleton):
 
     def read_temperatures(self):
         current_time = time.time()
-        print('TimeDiff', current_time - self._last_time)
         if current_time - self._last_time > _REFRESH_DELAY:
             temperature_keg = self._sensor_keg.read_temperature()
             temperature_column = self._sensor_column.read_temperature()
